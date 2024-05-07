@@ -5,3 +5,9 @@ Brain storm ideas : Discrpency of parent and children rating predicting children
 
 Reference section :
 https://pubmed.ncbi.nlm.nih.gov/36395045/#full-view-affiliation-1
+
+Week2 : 
+Plans to do transitional concern / parental warmth exploratory data analysis
+1.correlational analysis with the dependent variable
+2.distribution of the scores (check if it's skewed)
+3.Check previous papers to see how they set up construct validity
