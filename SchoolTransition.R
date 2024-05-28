@@ -72,3 +72,30 @@ Overall_P_and_C %>%
   group_by(ID) %>%
   count() %>%
   print(n = Inf)
+#We need to know who wrote the parent-perceived parental warmth and hostility questionnaire (male =1, female =2)
+PWHdata_parents <- schooltransitiondata %>%
+  select(418:427,251, ID) %>%
+  na.omit
+Parent_PWHdata<- PWHdata_parents %>%
+  mutate(hostility_P = P1_PWH1 + P1_PWH3 + P1_PWH4 + P1_PWH8) %>%
+  mutate(warmth_P = P1_PWH2 + P1_PWH5 + P1_PWH6 + P1_PWH7 + P1_PWH9 + P1_PWH10)
+Parent_PWHdata_overall <- Parent_PWHdata %>%
+  select(ID, hostility_P, warmth_P, P1_ParentGender)
+Overall_P_and_C <- merge(Overall, Parent_PWHdata_overall, by = "ID")
+#Now we need to separate maternal and paternal warmth and hostility.
+PaternalPupils <- Overall_P_and_C %>%
+  filter(P1_ParentGender == 1) %>%
+  select(ID) %>%
+  unique() %>%
+  as.list()
+PaternalPupils
+#These pupils had their dad filled out the questionnaire, so we should focus on paternal warmth and hostility for these pupils. 
+#Let's first check if all the above IDs are in PaternalPWH data IDs
+PaternalPupils %in% PaternalPWHdata$ID
+#So no, not all children with their dad answering the questionnaire had their paternal PWH data. So now we need to filter out those who had their paternal PWH data.
+list <- as.list(PaternalPWHdata$ID)
+commonlist <- as.list(intersect(unlist(PaternalPupils), unlist(list)))
+newdata <- PaternalPWHdata %>%
+  filter(ID %in% commonlist) %>%
+  select(ID, hostility, warmth)
+  
