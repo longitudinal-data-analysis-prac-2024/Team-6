@@ -122,13 +122,13 @@ p5 <- ggplot(PaternalDataset1, aes(x = hostility_Discrepancies)) +
   geom_histogram(aes(y = ..density..),
                  binwidth = 2,
                  colour = "black", fill = "white")+
-  geom_density(alpha = .2, fill="#FF6666")+
-  ggtitle("Paternal Discrepancy Distribution")
+  geom_density(alpha = .2, fill="#F2D")+
+  ggtitle("Paternal Wave 1")
 p6 <- ggplot(PaternalDataset1, aes(x = warmth_Discrepancies)) +
   geom_histogram(aes(y = ..density..),
                  binwidth = 2,
                  colour = "black", fill = "white")+
-  geom_density(alpha = .2, fill="#FF6666")
+  geom_density(alpha = .2, fill="#F2D")
 p_density3 <- grid.arrange(p5, p6)
 #We shall pause and do some interpretations here: Lower number means more: for example, a lower number of warmth means that there is MORE warmth in the parental relationship; similarly, a high number of hostility means that there is LESS hostility in the parental relationship. So if the hostility discrepancy is a large positive number, it means that the child has a higher perceived hostility score, meaning that the child thinks that the parent is being LESS hostile than the parents think they are. On the other hand, if the hostility discrepancy is a large negative number, it means that the child has a lower perceived hostility score, meaning that the child thinks that the parent is being MORE hostile than the parents thinks they are. In similar senses, a large positive warmth discrepancy number means that the child has a higher perceived warmth score, meaning that the child thinks that the parent is being LESS warm than the parents think they are. A large negative warmth discrepancy number means that the child has a lower perceived warmth score, meaning that the child thinks that the parent is being MORE warm than the parents think they are.
 #We can observe from the distribution shape that hostility discrepancy is left skewed while warmth discrepancy is right skewed. And this means that parents generally tend to think they are more hostile and less warm than the children think they are. This could be a demonstration of parental guilt---parents sometime tend to over-reflect on their parental behaviors. Note that this is only the paternal data though. The next step is to see if similar patterns show on maternal data.
@@ -162,13 +162,13 @@ p7 <- ggplot(MaternalDataset1, aes(x = hostility_Discrepancies)) +
   geom_histogram(aes(y = ..density..),
                  binwidth = 2,
                  colour = "black", fill = "white")+
-  geom_density(alpha = .2, fill="#FF6")+
-  ggtitle("Maternal Disrepancy Distribution")
+  geom_density(alpha = .2, fill="#0000FF7D")+
+  ggtitle("Maternal Wave 1")
 p8 <- ggplot(MaternalDataset1, aes(x = warmth_Discrepancies)) +
   geom_histogram(aes(y = ..density..),
                  binwidth = 2,
                  colour = "black", fill = "white")+
-  geom_density(alpha = .2, fill="#FF6")
+  geom_density(alpha = .2, fill="#0000FF7D")
 p_density4 <- grid.arrange(p7, p8)
 p_overall_1 <- grid.arrange(p5, p7, p6, p8, nrow = 2, ncol = 2)
 #We can see that the patterns for paternal and maternal data are actually quite similar. I would say that the hostility discrepancy resembles more of a normal distribution and the warmth discrepancy data has a larger and more prominent peak. This could potentially mean that mothers are more accurate in terms of their self-reflected parental warmth and hostility (at least more consistent with children's feedback). The degree of "parental guilt" as described before is less prominent among mothers than fathers. 
@@ -232,3 +232,83 @@ grid.arrange(p3, p11, p4, p12)
 grid.arrange(p1, p9, p3, p11, p2, p10, p4, p12, nrow = 2, ncol = 4)
 #From this graph, we can see that the discrepancy between wave 2 hostility child-perceived and parent-perceived is the greatest. We shall know more about it once we conducted discrepancy analyses.
 #Now we can calculate the discrepancies at Wave 2.
+#Again, we need to know who wrote the questionnaire at wave 2 (mom or dad).
+PaternalPupilsWave2 <- Parent_PWHdata_Wave2 %>%
+  filter(P2_ParentGender == 1) %>%
+  select(ID) %>%
+  unique() %>%
+  as.list()
+#This is the list of pupils that have their dad filled out the PWH data at wave 2.
+PaternalPupilsWave2 %in% PaternalPWHdataWave2$ID
+list2 <- as.list(PaternalPWHdataWave2$ID)
+commonlist2 <- as.list(intersect(unlist(PaternalPupilsWave2), unlist(list2)))
+newdata_childperceived_p_wave2 <- PaternalPWHdataWave2 %>%
+  filter(ID %in% commonlist2) %>%
+  select(ID, hostility, warmth)
+Father_PWHdata_overall_wave2 <- Parent_PWHdata_Wave2 %>%
+  filter(P2_ParentGender == 1) %>%
+  select(ID, hostility_P2, warmth_P2)
+newdata_childperceived_p_wave2$ID %in% Father_PWHdata_overall_wave2$ID
+#Now we combine the child-perceived and dad-perceived data together.
+PaternalDataset2 <- merge(newdata_childperceived_p_wave2, Father_PWHdata_overall_wave2) %>%
+  as_tibble
+PaternalDataset2 <- PaternalDataset2 %>%
+  rename(hostility_C2 = hostility,
+         warmth_C2 = warmth) 
+PaternalDataset2 <- PaternalDataset2 %>%
+  mutate(hostility_Discrepancies = hostility_C2 - hostility_P2,
+         warmth_Discrepancies = warmth_C2 - warmth_P2)
+p13 <- ggplot(PaternalDataset2, aes(x = hostility_Discrepancies)) +
+  geom_histogram(aes(y = ..density..),
+                 binwidth = 2,
+                 colour = "black", fill = "white")+
+  geom_density(alpha = .2, fill="#FF6")+
+  ggtitle("Paternal Wave 2")
+p14 <- ggplot(PaternalDataset2, aes(x = warmth_Discrepancies)) +
+  geom_histogram(aes(y = ..density..),
+                 binwidth = 2,
+                 colour = "black", fill = "white")+
+  geom_density(alpha = .2, fill="#FF6")
+grid.arrange(p13, p14)
+#If the hostility discrepancy is a large positive number, it means that the child has a higher perceived hostility score, meaning that the child thinks that the parent is being LESS hostile than the parents think they are. On the other hand, if the hostility discrepancy is a large negative number, it means that the child has a lower perceived hostility score, meaning that the child thinks that the parent is being MORE hostile than the parents thinks they are. In similar senses, a large positive warmth discrepancy number means that the child has a higher perceived warmth score, meaning that the child thinks that the parent is being LESS warm than the parents think they are. A large negative warmth discrepancy number means that the child has a lower perceived warmth score, meaning that the child thinks that the parent is being MORE warm than the parents think they are.
+#We can observe from the distribution shape that hostility discrepancy is left skewed while warmth discrepancy is right skewed. And this means that parents generally tend to think they are more hostile and less warm than the children think they are. This could be a demonstration of parental guilt---parents sometime tend to over-reflect on their parental behaviors. Note that this is only the paternal data though. The next step is to see if similar patterns show on maternal data. Basically the same patterns maintained at wave 2. We shall compare the distribution side by side to have a better comparison.
+#But we shall look at maternal data first.
+MaternalPupilsWave2 <- Parent_PWHdata_Wave2 %>%
+  filter(P2_ParentGender == 2) %>%
+  select(ID) %>%
+  unique() %>%
+  as.list()
+MaternalPupilsWave2 %in% MaternalPWHdataWave2$ID
+list3 <- as.list(MaternalPWHdataWave2$ID)
+commonlist3 <- as.list(intersect(unlist(MaternalPupilsWave2), unlist(list3)))
+newdata_childperceived_m_wave2 <- MaternalPWHdataWave2 %>%
+  filter(ID %in% commonlist3) %>%
+  select(ID, hostility, warmth)
+Mother_PWHdata_overall_wave2 <- Parent_PWHdata_Wave2 %>%
+  filter(P2_ParentGender == 2) %>%
+  select(ID, hostility_P2, warmth_P2)
+newdata_childperceived_m_wave2$ID %in% Mother_PWHdata_overall_wave2$ID
+MaternalDataset2 <- merge(newdata_childperceived_m_wave2, Mother_PWHdata_overall_wave2) %>%
+  as_tibble
+MaternalDataset2 <- MaternalDataset2 %>%
+  rename(hostility_C2 = hostility,
+         warmth_C2 = warmth) 
+MaternalDataset2 <- MaternalDataset2 %>%
+  mutate(hostility_Discrepancies = hostility_C2 - hostility_P2,
+         warmth_Discrepancies = warmth_C2 - warmth_P2)
+p15 <- ggplot(MaternalDataset2, aes(x = hostility_Discrepancies)) +
+  geom_histogram(aes(y = ..density..),
+                 binwidth = 2,
+                 colour = "black", fill = "white")+
+  geom_density(alpha = .2, fill="#FF6666")+
+  ggtitle("Maternal Wave 2")
+p16 <- ggplot(MaternalDataset2, aes(x = warmth_Discrepancies)) +
+  geom_histogram(aes(y = ..density..),
+                 binwidth = 2,
+                 colour = "black", fill = "white")+
+  geom_density(alpha = .2, fill="#FF6666")
+grid.arrange(p15, p16)
+#Again, maternal discrepancies distributions are less skewed than that of paternal ones. There is an apparent outlier in the warmth discrepancy data though which is worth noting. Now we can put wave 2 discrepancy data together.
+grid.arrange(p13, p15, p14, p16, nrow = 2, ncol = 2)
+#Now we can put wave 1 and wave 2 discrepancy distribution graphs together to further compare.
+grid.arrange(p5, p13, p7, p15, p6, p14, p8, p16, nrow = 2, ncol = 4)
