@@ -312,3 +312,37 @@ grid.arrange(p15, p16)
 grid.arrange(p13, p15, p14, p16, nrow = 2, ncol = 2)
 #Now we can put wave 1 and wave 2 discrepancy distribution graphs together to further compare.
 grid.arrange(p5, p13, p7, p15, p6, p14, p8, p16, nrow = 2, ncol = 4)
+#Now I need to create a new combined data set in order to proceed with data analysis.
+#Let's look at the paternal dataset first to see how many people dropped out after first wave.
+PaternalDataset2$ID %in% PaternalDataset1$ID
+#Ok, we have quite a bit of a difference here.
+PaternalDataset1 <- PaternalDataset1 %>%
+  mutate(ParentGender = "Male",
+         WaveNumber = "Wave1")
+PaternalDataset2 <- PaternalDataset2 %>%
+  mutate(ParentGender = "Male",
+         WaveNumber = "Wave2")
+PaternalDataOverall <- bind_rows(PaternalDataset1, PaternalDataset2)
+PaternalDataOverall %>%
+  group_by(ID) %>%
+  count() %>%
+  print(n = Inf)
+MaternalDataset2$ID %in% MaternalDataset1$ID
+#Much more similar than paternal data, for some reason.
+MaternalDataset1 <- MaternalDataset1 %>%
+  mutate(ParentGender = "Female",
+         WaveNumber = "Wave1")
+MaternalDataset2 <- MaternalDataset2 %>%
+  mutate(ParentGender = "Female",
+         WaveNumber = "Wave2")
+MaternalDataOverall <- bind_rows(MaternalDataset1, MaternalDataset2)
+MaternalDataOverall %>%
+  group_by(ID) %>%
+  count() %>%
+  print(n = Inf)
+#Now we combine the maternal AND paternal data into a big dataframe
+OverallData <- bind_rows(PaternalDataOverall, MaternalDataOverall) %>%
+  as_tibble
+write.csv(OverallData, "OverallData.cvs", row.names = FALSE)
+
+
