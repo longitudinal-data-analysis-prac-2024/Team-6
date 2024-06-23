@@ -344,4 +344,100 @@ MaternalDataOverall %>%
 OverallData <- bind_rows(PaternalDataOverall, MaternalDataOverall) %>%
   as_tibble
 write.csv(OverallData, "OverallData.cvs", row.names = FALSE)
+OverallData <- read_csv("OverallData.cvs")
+#Now I feel like it would make more sense to treat the discrepancy as absolute value. If I have more time, I think it would be even better to treat the positive value and negative value of discrepancy separately.
+OverallData <- OverallData %>%
+  mutate(Abs_hostility_Discrepancies = abs(hostility_Discrepancies),
+         Abs_warmth_Discrepancies = abs(warmth_Discrepancies))
+library(lme4)
 
+#Multilevel modeling
+DataLoss <- OverallData %>%
+  group_by(ID) %>%
+  count()
+DataLoss <- DataLoss %>%
+  filter(n == 2)
+OverallDataComplete <- OverallData %>%
+  filter(ID %in% DataLoss$ID)
+OverallDataComplete <- OverallDataComplete %>%
+  mutate(ParentGender = factor(ParentGender, levels = c("Male", "Female")),
+         WaveNumber = factor(WaveNumber, levels = c("Wave1", "Wave2")))
+OverallDataComplete <- OverallDataComplete %>%
+  mutate(WaveNumber= as.numeric(WaveNumber),
+         ParentGender = as.numeric(ParentGender))
+#This generates a new dataset that include all individuals that have completed surveys in both wave 1 and wave 2
+#Null model
+null_model1 <- lmer(Abs_hostility_Discrepancies ~ 1 + (1|ID), data = OverallDataComplete, REML = FALSE)
+summary(null_model1)
+library(performance)
+performance::icc(null_model1)
+#ICC is interpreted as the proportion of variance between people. 18.6% of the variance in hostility discrepancy is attributed to a person.
+#Adding level-1 and Level-2 fixed and random effects
+l1_model <- lmer(Abs_hostility_Discrepancies ~ 1 + WaveNumber + ParentGender + (1|ID), data = OverallDataComplete, REML = FALSE)
+l1_model_wo_ParentGender <- lmer(Abs_hostility_Discrepancies ~ 1 + WaveNumber + (1|ID), data = OverallDataComplete, REML = FALSE)
+summary(l1_model)
+summary(l1_model_wo_ParentGender)
+anova(l1_model, l1_model_wo_ParentGender)
+#Intercept is 2.77, meaning that at wave 0 when the parent gender is male, the average hostility discrepancy across all individuals is 2.77. But we don't have a wave 0, so this value is non-interpretable. Wave 2 has a 1.12 higher hostility discrepancy than wave 1 and dad has 0.74 higher hostility discrepancy on average.
+anova(null_model1, l1_model)
+anova(null_model1, l1_model_wo_ParentGender)
+#Note that adding parent gender or not into the predictor did not significantly influence the deviance of the model, meaning that parent gender is likely a very weak predictor.
+#The model has significantly less deviance, so it is a better model.
+library(lmerTest)
+coef(summary(l1_model <- lmer(Abs_hostility_Discrepancies ~ 1 + WaveNumber + ParentGender + (1|ID), data = OverallDataComplete, REML = FALSE)))
+#Adding random slope. Note that I did not add parent gender into this model since it is a insignificant predictor.
+l1_random <- lmer(Abs_hostility_Discrepancies ~ 1 + WaveNumber + (0 + WaveNumber|ID) + (1|ID), data = OverallDataComplete, REML = FALSE)
+summary(l1_random)
+#Singularity problem: 1|ID is very close to zero, meaning that the individual differences are very low. This indicates that the same individual tends to have very similar discrepancies between wave 1 and wave 2. So I removed the 1|ID element that explains the random effects of individuals.
+l1_random <- lmer(Abs_hostility_Discrepancies ~ 1 + WaveNumber + (0 + WaveNumber|ID), data = OverallDataComplete, REML = FALSE)
+summary(l1_random)
+anova(l1_model_wo_ParentGender, l1_random)
+#Adding the random slope can decrease the deviance of the model, thus a good model.
+#Adding interaction terms.
+crosslevel_model <- lmer(Abs_hostility_Discrepancies ~ 1 + WaveNumber + ParentGender + (0 + WaveNumber|ID) + WaveNumber:ParentGender, data = OverallDataComplete, REML = FALSE)
+summary(crosslevel_model)
+#Note that after adding the interaction term, the main effects of wave number and parent gender became insignificant. I will explain it with visualization later on. The Interaction is insignificant.
+#Let's now look at parental warmths.
+#Null Model
+null_model2 <- lmer(Abs_warmth_Discrepancies ~ 1 + (1|ID), data = OverallDataComplete, REML = FALSE)
+summary(null_model2)
+performance::icc(null_model1)
+#ICC is interpreted as the proportion of variance between people. 18.6% of the variance in hostility discrepancy is attributed to a person.
+#Adding level 1 and level 2 fixed and random effects
+l1_model1 <- lmer(Abs_warmth_Discrepancies ~ 1 + WaveNumber + ParentGender + (1|ID), data = OverallDataComplete, REML = FALSE)
+summary(l1_model1)
+#Parent Gender's effect was less significant than hostility discrepancy. Now let's remove parent gender and then compare.
+l1_model1_wo_ParentGender <- lmer(Abs_warmth_Discrepancies ~ 1 + WaveNumber + (1|ID), data = OverallDataComplete, REML = FALSE)
+summary(l1_model1_wo_ParentGender)
+anova(l1_model1, l1_model1_wo_ParentGender)
+#Again, parent gender is a weak predictor. Now we add random slopes.
+l1_random1 <- lmer(Abs_warmth_Discrepancies ~ 1 + WaveNumber + (0 + WaveNumber|ID) + (1|ID), data = OverallDataComplete, REML = FALSE)
+summary(l1_random1)
+l1_random1 <- lmer(Abs_warmth_Discrepancies ~ 1 + WaveNumber + (0 + WaveNumber|ID), data = OverallDataComplete, REML = FALSE)
+summary(l1_random1)
+anova(l1_random1, l1_model1_wo_ParentGender)
+#The deviance is way lower for the model that include the random slope. Now let's include interaction.
+crosslevel_model1 <- lmer(Abs_warmth_Discrepancies ~ 1 + WaveNumber + ParentGender + (0 + WaveNumber|ID) + WaveNumber:ParentGender, data = OverallDataComplete, REML = FALSE)
+summary(crosslevel_model1)
+#Similarly, after adding the interaction term, the main effects of wave number of parent gender became insignificant.
+#In summary, from wave 1 to wave 2, the hostility discrepancy increased by 1.13. ALthough not significant (tendency to significance), moms tend to have 0.74 less discrepancy than dads. From wave 1 to wave 2, the warmth discrepancy increased by 0.93. Although not significant, moms have 0.85 less discrepancy than dads. Hostility discrepancy seems to have a more parent gender-based effect than warmth discrepancy. This could indicates that stressful events such as transitioning to secondary school can increase the discrepancy between parent-perceived and child-perceived parental warmth and hostility.
+#I am now trying to visualize the data.
+p17 <- OverallDataComplete %>%
+  group_by(WaveNumber, ParentGender) %>%
+  mutate(hmean = mean(Abs_hostility_Discrepancies)) %>%
+  ggplot(mapping = aes(x = WaveNumber, y = hmean, colour = factor(ParentGender) )) +
+  geom_line() +
+  labs(title = "Hostility Discrepancies Over Time", y = "Mean Hostility Discrepancies") +
+  scale_x_discrete(limits = c(1, 2))
+#We can see here that major difference between wave 1 and wave 2 is contributed by mom. That is exactly why after adding interaction terms the main effects of wave number and parent gender became insignificant.
+p18 <- OverallDataComplete %>%
+  group_by(WaveNumber, ParentGender) %>%
+  mutate(wmean = mean(Abs_warmth_Discrepancies)) %>%
+  ggplot(mapping = aes(x = WaveNumber, y = wmean, colour = factor(ParentGender) )) +
+  geom_line() +
+  labs(title = "Warmth Discrepancies Over Time", y = "Mean Warmth Discrepancies") +
+  scale_x_discrete(limits = c(1, 2))
+#We can see here that major difference between wave 1 and wave 2 is again contributed by mom. That is exactly why after adding interaction terms the main effects of wave number and parent gender became insignificant.
+library(gridExtra)
+grid.arrange(p17, p18)
+#In summary, we can conclude that warmth and hostility discrepancies for moms seem to increase more drastically from wave 1 to wave 2. Dads tend to have an overall higher warmth and hostility discrepancies than mom.
