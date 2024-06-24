@@ -351,7 +351,7 @@ OverallData <- OverallData %>%
          Abs_warmth_Discrepancies = abs(warmth_Discrepancies))
 library(lme4)
 
-#Multilevel modeling
+#Multilevel modeling. So what i am doing is called a Mixed model ANOVA. This model is specifically used for 2 dichotomous independent variables, which is the case here.
 DataLoss <- OverallData %>%
   group_by(ID) %>%
   count()
@@ -441,3 +441,35 @@ p18 <- OverallDataComplete %>%
 library(gridExtra)
 grid.arrange(p17, p18)
 #In summary, we can conclude that warmth and hostility discrepancies for moms seem to increase more drastically from wave 1 to wave 2. Dads tend to have an overall higher warmth and hostility discrepancies than mom.
+#I need to check the residual and homoscedacity.
+l1residual <- residuals(l1_random)
+head(l1residual)
+#After extracting the residuals, I have to make sure that the residuals are normally distributed.
+p19 <- ggplot(OverallDataComplete, aes(x = l1residual)) +
+  geom_histogram(aes(y = ..density..),
+                 binwidth = 2,
+                 colour = "black", fill = "white")+
+  geom_density(alpha = .2, fill="#FF6666") +
+  ggtitle("Residual Distribution and QQ-Plot for Absolute Hostility Discrepancies")
+#Great, residuals is normally distributed.
+#Let's just double-check with qq-plot.
+p20 <- OverallDataComplete %>%
+  ggplot(mapping = aes(sample = l1residual)) +
+  stat_qq()
+library(gridExtra)
+grid.arrange(p19, p20)
+#Checked. The qq plot is linear, meaning that the residuals are roughly normally distributed. This is only for hostility Discrepancies.
+l1residual1 <- residuals(l1_random1)
+head(l1residual1)
+p21 <- ggplot(OverallDataComplete, aes(x = l1residual1)) +
+  geom_histogram(aes(y = ..density..),
+                 binwidth = 2,
+                 colour = "black", fill = "white")+
+  geom_density(alpha = .2, fill="#FF6666") +
+  ggtitle("Residual Distribution and QQ-Plot for Absolute warmth Discrepancies")
+#Okay, there are perhaps some outliers in this residual distribution. I will conduct a qq plot to make sure.
+p22 <- OverallDataComplete %>%
+  ggplot(mapping = aes(sample = l1residual1)) +
+  stat_qq()
+grid.arrange(p21, p22)
+#So the residuals for this one is close to normally distributed but I am not sure. 
