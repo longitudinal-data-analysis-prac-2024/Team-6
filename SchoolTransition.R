@@ -470,6 +470,8 @@ p21 <- ggplot(OverallDataComplete, aes(x = l1residual1)) +
 #Okay, there are perhaps some outliers in this residual distribution. I will conduct a qq plot to make sure.
 p22 <- OverallDataComplete %>%
   ggplot(mapping = aes(sample = l1residual1)) +
-  stat_qq()
+  stat_qq() 
+qqnorm(l1residual1)
+qqline(l1residual1)
 grid.arrange(p21, p22)
-#So the residuals for this one is close to normally distributed but I am not sure. 
+#So the residuals for this one is close to normally distributed but I am not sure. So this indicates that maybe more predictors need to be addded. The shape means the is slightly skewed and a bit heavy on tails.
