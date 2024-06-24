@@ -61,3 +61,19 @@ summary(fit_warmth_test)
 fit_hostility_test <- sem(model_hostility, data = regression_dataframe_test)
 summary(fit_hostility_test)
 #when using wave 2 discrepancy score to predict, we find the p value = .342 in the regression model of warmth discrepency, and we find the p value = .396 in the regression model of hostility discrepency
+
+#Testing what happens if we address the covariance between discrepancy scores and wave 1 total scores
+model_warmth_test1 <- '
+total_score_wave2 ~ 1 + warmth_Discrepancies + total_score_wave1
+warmth_Discrepancies ~ total_score_wave1
+'
+fit_warmth_test1 <- sem(model_warmth_test1, data = regression_dataframe)
+summary(fit_warmth_test1)
+
+model_hostility_test1 <- '
+total_score_wave2 ~ 1 + hostility_Discrepancies + total_score_wave1
+hostility_Discrepancies ~ total_score_wave1
+'
+fit_hostility_test1 <- sem(model_hostility_test1, data = regression_dataframe)
+summary(fit_hostility_test1)
+#p value stays the same
