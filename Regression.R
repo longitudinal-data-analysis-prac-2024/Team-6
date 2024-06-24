@@ -50,3 +50,14 @@ total_score_wave2 ~ hostility_Discrepancies + total_score_wave1
 '
 fit_hostility <- sem(model_hostility, data = regression_dataframe)
 summary(fit_hostility)
+
+#testing wave 2 discrepancy as predictor
+discrepancy_score_test <- rbind(MaternalDataset2, PaternalDataset2)
+regression_dataframe_test <- merge(children_difficult_merge, discrepancy_score_test, by = "ID", all = FALSE)
+
+fit_warmth_test <- sem(model_warmth, data = regression_dataframe_test)
+summary(fit_warmth_test)
+
+fit_hostility_test <- sem(model_hostility, data = regression_dataframe_test)
+summary(fit_hostility_test)
+#when using wave 2 discrepancy score to predict, we find the p value = .342 in the regression model of warmth discrepency, and we find the p value = .396 in the regression model of hostility discrepency
