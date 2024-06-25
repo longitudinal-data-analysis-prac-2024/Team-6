@@ -94,6 +94,9 @@ p4 <- ggplot(Parent_PWHdata, aes(x = hostility_P)) +
   ggtitle("Parent-Perceived Parental Hostility at Wave 1")
 p_density2 <- grid.arrange(p3, p4)
 ```
+![Figure 1](Graphs/Wave1ANDWave2ChildPerceivedWarmthHostility.png)
+*Figure 1. Distribution of children&parent-perceived warmth and hostility score wave 1&2*
+
 
 Now I look at discrepancies (children - parents)
 
@@ -429,7 +432,11 @@ grid.arrange(p13, p15, p14, p16, nrow = 2, ncol = 2)
 grid.arrange(p5, p13, p7, p15, p6, p14, p8, p16, nrow = 2, ncol = 4)
 ```
 
-Now I need to create a new combined data set in order to proceed with data analysis.
+![Figure 2](Graphs/OverallDisrepancyDistributionatWave1ANDWave2.png)
+*Figure 2. Distribution of paternal&maternal discrepency scores wave 1&2*
+
+
+## Data Analysis
 
 *Let's look at the paternal dataset first to see how many people dropped out after first wave.*
 
@@ -646,6 +653,9 @@ plot(p18)
 grid.arrange(p17, p18)
 ```
 
+![Figure 3](Graphs/HostilityandWarmthDiscrepanciesOverTime.png)
+*Figure 3. Warmth and hostility discrepancies over time*
+
 **In summary, we can conclude that warmth and hostility discrepancies for moms seem to increase more drastically from wave 1 to wave 2. Dads tend to have an overall higher warmth and hostility discrepancies than mom.**
 
 I need to check the residual and homoscedacity.
@@ -686,6 +696,9 @@ plot(p20)
 grid.arrange(p19, p20)
 ```
 
+![Figure 4](Graphs/AHDResidualDistribution.png)
+*Figure 4. Residual distribution and QQ-plot for absolute hostility discrepancies*
+
 **Checked. The qq plot is linear, meaning that the residuals are roughly normally distributed. This is only for hostility Discrepancies.**
 
 ```{r}
@@ -719,6 +732,9 @@ plot(p22)
 ```{r}
 grid.arrange(p21, p22)
 ```
+
+![Figure 5](Graphs/AWDResidualDistributionandQQplot.png)
+*Figure 5. Residual distribution and QQ-plot for absolute warmth discrepancies*
 
 **So the residuals for this one is close to normally distributed but I am not sure. So this indicates that maybe more predictors need to be addded. The shape means the is slightly skewed and a bit heavy on tails.**
 
