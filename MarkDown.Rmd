@@ -766,6 +766,8 @@ ggplot(children_difficult_merge, aes(x = total_score_wave2)) +
   theme_minimal()
 ```
 
+*regression model for predicting difficult scores reported by children in wave 2*
+
 ```{r}
 discrepancy_score <- rbind(MaternalDataset1, PaternalDataset1)
 regression_dataframe <- merge(children_difficult_merge, discrepancy_score, by = "ID", all = FALSE)
@@ -777,14 +779,17 @@ total_score_wave2 ~ warmth_Discrepancies + total_score_wave1
 '
 fit_warmth <- sem(model_warmth, data = regression_dataframe)
 summary(fit_warmth)
+cor.test(regression_dataframe$warmth_Discrepancies, regression_dataframe$total_score_wave1)
 
 model_hostility <- '
 total_score_wave2 ~ hostility_Discrepancies + total_score_wave1
 '
 fit_hostility <- sem(model_hostility, data = regression_dataframe)
 summary(fit_hostility)
+cor.test(regression_dataframe$hostility_Discrepancies, regression_dataframe$total_score_wave1)
 ```
 
+**In the regression model of warmth discrepency predicting difficult scores reported by children, we find the p value = .273; in the regression model of hostility discrepency, we find the p value = .679, both are not significant. Correlation test showed no significance between wave1 difficult score reported by children and warmth discrepancy scores, but showed significance with hostility discrepancy scores (p = .01)**
 
 # testing wave 2 discrepancy as predictor
 
@@ -801,22 +806,33 @@ summary(fit_hostility_test)
 
 **when using wave 2 discrepancy score to predict, we find the p value = .342 in the regression model of warmth discrepency, and we find the p value = .396 in the regression model of hostility discrepency**
 
-# Testing what happens if we address the covariance between discrepancy scores and wave 1 total scores
+#test parent reported difficult score
 
 ```{r}
-model_warmth_test1 <- '
-total_score_wave2 ~ 1 + warmth_Discrepancies + total_score_wave1
-warmth_Discrepancies ~ total_score_wave1
-'
-fit_warmth_test1 <- sem(model_warmth_test1, data = regression_dataframe)
-summary(fit_warmth_test1)
+parent_difficult_wave1 <- schooltransitiondata %>% select(1, 303:327)
+parent_difficult_wave1_filtered <- parent_difficult_wave1 %>% filter(complete.cases(.))
+parent_difficult_wave1_filtered_sum <- parent_difficult_wave1_filtered %>% 
+  rowwise() %>%
+  mutate(total_score_wave1 = sum(c_across(2:26), na.rm = TRUE)) %>%
+  ungroup()
 
-model_hostility_test1 <- '
-total_score_wave2 ~ 1 + hostility_Discrepancies + total_score_wave1
-hostility_Discrepancies ~ total_score_wave1
-'
-fit_hostility_test1 <- sem(model_hostility_test1, data = regression_dataframe)
-summary(fit_hostility_test1)
-#p value stays the same
+parent_difficult_wave2 <- schooltransitiondata %>% select(1, 663:687)
+parent_difficult_wave2_filtered <- parent_difficult_wave2 %>% filter(complete.cases(.))
+parent_difficult_wave2_filtered_sum <- parent_difficult_wave2_filtered %>% 
+  rowwise() %>%
+  mutate(total_score_wave2 = sum(c_across(2:26), na.rm = TRUE)) %>%
+  ungroup()
+
+parent_difficult_merge <- merge(parent_difficult_wave1_filtered_sum, parent_difficult_wave2_filtered_sum, by = "ID", all = FALSE)
+regression_dataframe_parent <- merge(parent_difficult_merge, discrepancy_score, by = "ID", all = FALSE)
+
+fit_warmth_parent <- sem(model_warmth, data = regression_dataframe_parent)
+summary(fit_warmth_parent)
+cor.test(regression_dataframe_parent$warmth_Discrepancies, regression_dataframe_parent$total_score_wave1)
+
+fit_hostility_parent <- sem(model_hostility, data = regression_dataframe_parent)
+summary(fit_hostility_parent)
+cor.test(regression_dataframe_parent$hostility_Discrepancies, regression_dataframe_parent$total_score_wave1)
 ```
 
+**In the regression model of warmth discrepency predicting difficult score reported by parents, we find the p value = .489; in the regression model of hostility discrepency, we find the p value = .176, both are not significant. Correlation test showed no significance between wave1 difficult score reported by parents and discrepancy scores.**
