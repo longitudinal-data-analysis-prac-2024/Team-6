@@ -1,13 +1,4 @@
----
-title: "Markdown"
-author: "RowlandLuo"
-date: "`r Sys.Date()`"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+# **Team 6 LDA project by Rowland & Po-Kai**
 
 ## School Transition Data
 
@@ -726,7 +717,7 @@ grid.arrange(p21, p22)
 
 **So the residuals for this one is close to normally distributed but I am not sure. So this indicates that maybe more predictors need to be addded. The shape means the is slightly skewed and a bit heavy on tails.**
 
-# regression 
+# Regression Analysis
 
 ```{r}
 children_difficult_wave1 <- schooltransitiondata %>% select(1, 98:122)
@@ -746,7 +737,7 @@ children_difficult_wave2_filtered_sum <- children_difficult_wave2_filtered %>%
 children_difficult_merge <- merge(children_difficult_wave1_filtered_sum, children_difficult_wave2_filtered_sum, by = "ID", all = FALSE)
 ```
 
-*check the difficult score distribution a bit*
+*Let's check the difficult score distribution a bit*
 
 ```{r}
 ggplot(children_difficult_merge, aes(x = total_score_wave1)) +
@@ -766,7 +757,7 @@ ggplot(children_difficult_merge, aes(x = total_score_wave2)) +
   theme_minimal()
 ```
 
-*regression model for predicting difficult scores reported by children in wave 2*
+*We proceed to set up regression model for predicting difficult scores reported by children in wave 2*
 
 ```{r}
 discrepancy_score <- rbind(MaternalDataset1, PaternalDataset1)
@@ -791,22 +782,7 @@ cor.test(regression_dataframe$hostility_Discrepancies, regression_dataframe$tota
 
 **In the regression model of warmth discrepency predicting difficult scores reported by children, we find the p value = .273; in the regression model of hostility discrepency, we find the p value = .679, both are not significant. Correlation test showed no significance between wave1 difficult score reported by children and warmth discrepancy scores, but showed significance with hostility discrepancy scores (p = .01)**
 
-# testing wave 2 discrepancy as predictor
-
-```{r}
-discrepancy_score_test <- rbind(MaternalDataset2, PaternalDataset2)
-regression_dataframe_test <- merge(children_difficult_merge, discrepancy_score_test, by = "ID", all = FALSE)
-
-fit_warmth_test <- sem(model_warmth, data = regression_dataframe_test)
-summary(fit_warmth_test)
-
-fit_hostility_test <- sem(model_hostility, data = regression_dataframe_test)
-summary(fit_hostility_test)
-```
-
-**when using wave 2 discrepancy score to predict, we find the p value = .342 in the regression model of warmth discrepency, and we find the p value = .396 in the regression model of hostility discrepency**
-
-#test parent reported difficult score
+# Testing Parent Reported Difficult Score
 
 ```{r}
 parent_difficult_wave1 <- schooltransitiondata %>% select(1, 303:327)
