@@ -1,16 +1,20 @@
-# **Team 6 LDA project by Rowland & Po-Kai**
+# **Team 6 LDA Project**
 
-## School Transition Data
+> This is the LDA team 6 project by Rowland and Po-Kai. Research suggested that self-control of children declines when making the transition to secondary school, with parental warmth playing a role in the trajectory (Ng-Knight et al., 2016). Recent studies further demonstrated that a higher level of jointly perceived parental warmth is associated with more positive adjustments in adolescents (Gniewosz et al., 2023). We thus aim to understand the underlying trajectory of how parental warmth affects children development. Our analysis focused on the discrepancy score of parental warmth perceived by children and parents with a longitudinal data collected in South-east England, UK from October 2011 to September 2012 (Rice et al, 2017).
+
+## Research Question
 
 **First research question: How do the discrepancies between child-perceived parental warmth & hostility and parent-perceived parental warmth & hostility change from wave 1 to wave 2?**
+>Since pupils go through secondary school transition from wave 1 to wave 2, our hypothesis is that the discrepancies will significantly differ due to the stressful event of school transitioning.
 
-*Since pupils go through secondary school transition from wave 1 to wave 2, our hypothesis is the discrepancies will significantly differ due to the stressful event of school transitioning.*
+**Second research question: Do the discrepancies differ for mothers and fathers?**
+>In other words, do moms or dads tend to have higher discrepancy in their parental warmth and hostility? Do moms or dads' discrepancies change more following school transitioning?**
 
-**Second research question: Do the discrepancies differ for mothers and fathers? In other words, do moms or dads tend to have higher discrepancy in their parental warmth and hostility? Do moms or dads' discrepancies change more following school transitioning?**
 
 **Third research question: How does parental warmth and hostility discrepancy at wave 1 predict pupil's mental health difficulties at wave 2?**
+>According to Buthmann et al. (2023), lower adolescent than parent ratings of parental warmth predicted increased externalizing symptoms after two years follow-up. We are interested in 1. if hostility discrepancy score also serves as good predictor 2. if the results can be replicated in predicting mental health difficulties.
 
-
+## Data Analysis
 ```{r}
 library(haven)
 schooltransitiondata <- read_sav("/Users/rluo/Documents/Longitudinal Data Analysis/Team-6/Data/SchoolTransitionData.sav")
