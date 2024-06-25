@@ -14,7 +14,7 @@
 **Third research question: How does parental warmth and hostility discrepancy at wave 1 predict pupil's mental health difficulties at wave 2?**
 >According to Buthmann et al. (2023), lower adolescent than parent ratings of parental warmth predicted increased externalizing symptoms after two years follow-up. We are interested in 1. if hostility discrepancy score also serves as good predictor 2. if the results can be replicated in predicting mental health difficulties.
 
-## Data Analysis
+## Data Preparation
 ```{r}
 library(haven)
 schooltransitiondata <- read_sav("/Users/rluo/Documents/Longitudinal Data Analysis/Team-6/Data/SchoolTransitionData.sav")
@@ -32,7 +32,7 @@ PWHdata <- schooltransitiondata %>%
 
 *All of the children are living with either their mom or dad or both during the past 6 months.*
 
-# I first look at child-perceived parental warmth and hostility at wave 1
+I first look at child-perceived parental warmth and hostility at wave 1
 
 ```{r}
 MaternalPWHdata <- PWHdata %>%
@@ -71,7 +71,7 @@ library(gridExtra)
 p_density <- grid.arrange(p1, p2)
 ```
 
-# Now I look at parent-perceived parental warmth and hostility at wave 1
+Now I look at parent-perceived parental warmth and hostility at wave 1
 
 ```{r}
 PWHdata_parents <- schooltransitiondata %>%
@@ -95,7 +95,7 @@ p4 <- ggplot(Parent_PWHdata, aes(x = hostility_P)) +
 p_density2 <- grid.arrange(p3, p4)
 ```
 
-# Now I look at discrepancies (children - parents)
+Now I look at discrepancies (children - parents)
 
 *First of all, I will merge the parent- and children-perceived PWH data together based on ID.*
 ```{r}
@@ -182,7 +182,7 @@ PaternalDataset1 <- PaternalDataset1 %>%
   mutate(warmth_Discrepancies = warmth_C1 - warmth_P1)
 ```
 
-# Now we explore the distribution of the paternal discrepancies of warmth and hostility.
+Now we explore the distribution of the paternal discrepancies of warmth and hostility.
 
 ```{r}
 p5 <- ggplot(PaternalDataset1, aes(x = hostility_Discrepancies)) +
@@ -204,7 +204,7 @@ p_density3 <- grid.arrange(p5, p6)
 
 **We can observe from the distribution shape that hostility discrepancy is left skewed while warmth discrepancy is right skewed. And this means that parents generally tend to think they are more hostile and less warm than the children think they are. This could be a demonstration of parental guilt---parents sometime tend to over-reflect on their parental behaviors. Note that this is only the paternal data though. The next step is to see if similar patterns show on maternal data.**
 
-# Now let's look at the discrepancy for maternal data.
+Now let's look at the discrepancy for maternal data.
 
 ```{r}
 MaternalPupils <- Parent_PWHdata_overall %>%
@@ -252,9 +252,9 @@ p_density4 <- grid.arrange(p7, p8)
 p_overall_1 <- grid.arrange(p5, p7, p6, p8, nrow = 2, ncol = 2)
 ```
 
-**We can see that the patterns for paternal and maternal data are actually quite similar. I would say that the hostility discrepancy resembles more of a normal distribution and the warmth discrepancy data has a larger and more prominent peak. This could potentially mean that mothers are more accurate in terms of their self-reflected parental warmth and hostility (at least more consistent with children's feedback). The degree of "parental guilt" as described before is less prominent among mothers than fathers. **
+**We can see that the patterns for paternal and maternal data are actually quite similar. I would say that the hostility discrepancy resembles more of a normal distribution and the warmth discrepancy data has a larger and more prominent peak. This could potentially mean that mothers are more accurate in terms of their self-reflected parental warmth and hostility (at least more consistent with children's feedback). The degree of "parental guilt" as described before is less prominent among mothers than fathers.**
 
-# Okay, now we can do the same thing for the Wave 2 data.
+Okay, now we can do the same thing for the Wave 2 data.
 
 ```{r}
 PWHdataWave2 <- schooltransitiondata %>%
@@ -320,7 +320,7 @@ grid.arrange(p1, p9, p3, p11, p2, p10, p4, p12, nrow = 2, ncol = 4)
 
 **From this graph, we can see that the discrepancy between wave 2 hostility child-perceived and parent-perceived is the greatest. We shall know more about it once we conducted discrepancy analyses.**
 
-# Now we can calculate the discrepancies at Wave 2.
+Now we can calculate the discrepancies at Wave 2.
 
 *Again, we need to know who wrote the questionnaire at wave 2 (mom or dad).*
 
@@ -378,7 +378,7 @@ grid.arrange(p13, p14)
 
 **We can observe from the distribution shape that hostility discrepancy is left skewed while warmth discrepancy is right skewed. And this means that parents generally tend to think they are more hostile and less warm than the children think they are. This could be a demonstration of parental guilt---parents sometime tend to over-reflect on their parental behaviors. Note that this is only the paternal data though. The next step is to see if similar patterns show on maternal data. Basically the same patterns maintained at wave 2. We shall compare the distribution side by side to have a better comparison.**
 
-# But we shall look at maternal data first.
+But we shall look at maternal data first.
 
 ```{r}
 MaternalPupilsWave2 <- Parent_PWHdata_Wave2 %>%
@@ -429,7 +429,7 @@ grid.arrange(p13, p15, p14, p16, nrow = 2, ncol = 2)
 grid.arrange(p5, p13, p7, p15, p6, p14, p8, p16, nrow = 2, ncol = 4)
 ```
 
-# Now I need to create a new combined data set in order to proceed with data analysis.
+Now I need to create a new combined data set in order to proceed with data analysis.
 
 *Let's look at the paternal dataset first to see how many people dropped out after first wave.*
 
@@ -478,7 +478,8 @@ OverallData <- OverallData %>%
          Abs_warmth_Discrepancies = abs(warmth_Discrepancies))
 ```
 
-# Multilevel modeling. So what i am doing is called a Mixed model ANOVA. This model is specifically used for 2 dichotomous independent variables, which is the case here.
+## Multilevel Modeling. 
+>So what I am doing is called a Mixed model ANOVA. This model is specifically used for 2 dichotomous independent variables, which is the case here.
 
 ```{r}
 library(lme4)
