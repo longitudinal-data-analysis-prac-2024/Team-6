@@ -153,7 +153,7 @@ newdata_childperceived <- PaternalPWHdata %>%
 newdata_childperceived
 ```
 
-*This is the list of child-perceived parental warmth that can be compared with father-perceived parental warmth. *
+*This is the list of child-perceived parental warmth that can be compared with father-perceived parental warmth.*
 
 ```{r}
 Father_PWHdata_overall <- Parent_PWHdata_overall %>%
@@ -500,7 +500,7 @@ OverallDataComplete <- OverallDataComplete %>%
 
 *This generates a new dataset that include all individuals that have completed surveys in both wave 1 and wave 2*
 
-# Null model
+Null model
 
 ```{r}
 null_model1 <- lmer(Abs_hostility_Discrepancies ~ 1 + (1|ID), data = OverallDataComplete, REML = FALSE)
@@ -511,7 +511,7 @@ performance::icc(null_model1)
 
 **ICC is interpreted as the proportion of variance between people. 18.6% of the variance in hostility discrepancy is attributed to a person.**
 
-# Adding level-1 and Level-2 fixed and random effects
+Adding level-1 and Level-2 fixed and random effects
 
 ```{r}
 l1_model <- lmer(Abs_hostility_Discrepancies ~ 1 + WaveNumber + ParentGender + (1|ID), data = OverallDataComplete, REML = FALSE)
@@ -534,7 +534,7 @@ library(lmerTest)
 coef(summary(l1_model <- lmer(Abs_hostility_Discrepancies ~ 1 + WaveNumber + ParentGender + (1|ID), data = OverallDataComplete, REML = FALSE)))
 ```
 
-# Adding random slope. Note that I did not add parent gender into this model since it is a insignificant predictor.
+Adding random slope. Note that I did not add parent gender into this model since it is a insignificant predictor.
 
 ```{r}
 l1_random <- lmer(Abs_hostility_Discrepancies ~ 1 + WaveNumber + (0 + WaveNumber|ID) + (1|ID), data = OverallDataComplete, REML = FALSE)
@@ -551,7 +551,7 @@ anova(l1_model_wo_ParentGender, l1_random)
 
 **Adding the random slope can decrease the deviance of the model, thus a good model.**
 
-# Adding interaction terms.
+Adding interaction terms.
 
 ```{r}
 crosslevel_model <- lmer(Abs_hostility_Discrepancies ~ 1 + WaveNumber + ParentGender + (0 + WaveNumber|ID) + WaveNumber:ParentGender, data = OverallDataComplete, REML = FALSE)
@@ -560,9 +560,9 @@ summary(crosslevel_model)
 
 **Note that after adding the interaction term, the main effects of wave number and parent gender became insignificant. I will explain it with visualization later on. The Interaction is insignificant.**
 
-# Let's now look at parental warmths.
+Let's now look at parental warmths.
 
-# Null Model
+Null Model
 
 ```{r}
 null_model2 <- lmer(Abs_warmth_Discrepancies ~ 1 + (1|ID), data = OverallDataComplete, REML = FALSE)
@@ -572,7 +572,7 @@ performance::icc(null_model1)
 
 **ICC is interpreted as the proportion of variance between people. 18.6% of the variance in hostility discrepancy is attributed to a person.**
 
-# Adding level 1 and level 2 fixed and random effects
+Adding level 1 and level 2 fixed and random effects
 
 ```{r}
 l1_model1 <- lmer(Abs_warmth_Discrepancies ~ 1 + WaveNumber + ParentGender + (1|ID), data = OverallDataComplete, REML = FALSE)
@@ -608,7 +608,7 @@ summary(crosslevel_model1)
 
 **In summary, from wave 1 to wave 2, the hostility discrepancy increased by 1.13. ALthough not significant (tendency to significance), moms tend to have 0.74 less discrepancy than dads. From wave 1 to wave 2, the warmth discrepancy increased by 0.93. Although not significant, moms have 0.85 less discrepancy than dads. Hostility discrepancy seems to have a more parent gender-based effect than warmth discrepancy. This could indicates that stressful events such as transitioning to secondary school can increase the discrepancy between parent-perceived and child-perceived parental warmth and hostility.**
 
-# I am now trying to visualize the data.
+I am now trying to visualize the data.
 
 ```{r}
 p17 <- OverallDataComplete %>%
@@ -648,7 +648,7 @@ grid.arrange(p17, p18)
 
 **In summary, we can conclude that warmth and hostility discrepancies for moms seem to increase more drastically from wave 1 to wave 2. Dads tend to have an overall higher warmth and hostility discrepancies than mom.**
 
-# I need to check the residual and homoscedacity.
+I need to check the residual and homoscedacity.
 
 ```{r}
 l1residual <- residuals(l1_random)
