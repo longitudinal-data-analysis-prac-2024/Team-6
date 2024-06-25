@@ -436,8 +436,6 @@ grid.arrange(p5, p13, p7, p15, p6, p14, p8, p16, nrow = 2, ncol = 4)
 *Figure 2. Distribution of paternal&maternal discrepency scores wave 1&2*
 
 
-## Data Analysis
-
 *Let's look at the paternal dataset first to see how many people dropped out after first wave.*
 
 ```{r}
@@ -485,7 +483,7 @@ OverallData <- OverallData %>%
          Abs_warmth_Discrepancies = abs(warmth_Discrepancies))
 ```
 
-## Multilevel Modeling. 
+## Multilevel Modeling
 >So what I am doing is called a Mixed model ANOVA. This model is specifically used for 2 dichotomous independent variables, which is the case here.
 
 ```{r}
