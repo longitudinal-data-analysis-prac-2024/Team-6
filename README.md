@@ -776,6 +776,10 @@ ggplot(children_difficult_merge, aes(x = total_score_wave2)) +
   theme_minimal()
 ```
 
+![Figure 6](Graphs/Difficult_distribution.png)
+*Figure 6. Distribution of difficulty scores wave1&2*
+
+The sum of difficulty scores seems to be normally distributed.
 *We proceed to set up regression model for predicting difficult scores reported by children in wave 2*
 
 ```{r}
